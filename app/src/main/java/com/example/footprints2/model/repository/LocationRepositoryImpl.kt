@@ -74,4 +74,28 @@ class LocationRepositoryImpl @Inject constructor(
     override suspend fun loadLastAddress(): String  = withContext(Dispatchers.IO) {
         dao.loadLastAddress()
     }
+
+    override suspend fun loadAllMyLocationList(): List<MyLocation> {
+        return withContext(Dispatchers.IO) {
+            dao.loadAllMyLocationList()
+        }
+    }
+
+    override suspend fun loadAllDateAndTime(): List<Long> {
+        return withContext(Dispatchers.IO) {
+            dao.loadAllDateAndTime()
+        }
+    }
+
+    override suspend fun loadMyLocationListByStartAndEnd(start: Long, end: Long): List<MyLocation> {
+        return withContext(Dispatchers.IO) {
+            dao.loadMyLocationListByStartAndEnd(start, end)
+        }
+    }
+
+    override suspend fun loadMyLocationByDateAndTime(dateAndTime: Long): MyLocation {
+        return withContext(Dispatchers.IO) {
+            dao.loadMyLocationByDateAndTime(dateAndTime)
+        }
+    }
 }
