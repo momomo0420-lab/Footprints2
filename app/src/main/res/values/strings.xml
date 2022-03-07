@@ -7,4 +7,5 @@
     <string name="request_accurate_location">
         また[正確な位置情報を使用]をONにしてください\n
     </string>
+    <string name="show_map_here">Show map here.</string>
 </resources>

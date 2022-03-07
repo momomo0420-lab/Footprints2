@@ -14,6 +14,9 @@ class MainViewModel @Inject constructor(
     private val repository: LocationRepository,
     private val workManager: WorkManager
 ) : ViewModel() {
+    companion object {
+        private const val TAG = "MainViewModel"
+    }
 
     // 実行可能状態の確認フラグ
     private val _isRunnable = MutableLiveData(true)
@@ -21,6 +24,8 @@ class MainViewModel @Inject constructor(
 
     // 保持されているMyLocation全件
     val myLocationList = repository.loadAll().asLiveData()
+
+    val errorCode = MutableLiveData(0)
 
     /**
      * ワーカーが登録されているか確認する
@@ -30,15 +35,20 @@ class MainViewModel @Inject constructor(
             LocationUpdateWorker.UNIQUE_WORK_NAME
         ).get()
 
+        var count = 0
+
         if(workInfoList.isNotEmpty()) {
             _isRunnable.value = false
+            count++
 
             for(work in workInfoList) {
                 if(work.state != WorkInfo.State.ENQUEUED) {
                     _isRunnable.value = true
+                    count++
                 }
             }
         }
+        errorCode.value = count
     }
 
     /**

@@ -15,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:name=".FootprintsApplication">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
         <provider
             android:authorities="${applicationId}.androidx-startup"
             android:name="androidx.startup.InitializationProvider"
