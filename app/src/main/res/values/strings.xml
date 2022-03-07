@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Footprints2</string>
+    <string name="requested_always_allow">
+        [権限] -> [位置情報] より位置情報への\n
+        アクセスを[常に許可]にしてください\n
+    </string>
+    <string name="request_accurate_location">
+        また[正確な位置情報を使用]をONにしてください\n
+    </string>
 </resources>

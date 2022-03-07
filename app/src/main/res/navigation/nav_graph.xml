@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/requestPermissionFragment"
+        android:name="com.example.footprints2.ui.request_permissions.RequestPermissionsFragment"
+        android:label="権限要求画面"
+        tools:layout="@layout/fragment_request_permissions">
+        <action
+            android:id="@+id/action_requestPermissionFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out"
+            app:popUpTo="@id/requestPermissionFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.example.footprints2.ui.main.MainFragment"
+        android:label="メイン画面"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_detailFragment"
+            app:destination="@id/detailFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_mainFragment_to_requestPermissionFragment"
+            app:destination="@id/requestPermissionFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.example.footprints2.ui.detail.DetailFragment"
+        android:label="詳細画面"
+        tools:layout="@layout/fragment_detail">
+        <argument
+            android:name="myLocation"
+            app:argType="com.example.footprints2.model.repository.database.MyLocation" />
+    </fragment>
+</navigation>
