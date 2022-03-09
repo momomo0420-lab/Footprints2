@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.footprints2.databinding.MyLocationListItemBinding
 import com.example.footprints2.model.repository.database.MyLocation
-import com.example.footprints2.model.repository.database.convertDateAndTimeToMyFormat
+import com.example.footprints2.util.DateManipulator
 
 /**
  * MyLocationアダプタ
@@ -34,7 +34,9 @@ class MyLocationAdapter(
         fun bindTo(myLocation: MyLocation) {
             binding.apply {
                 address.text = myLocation.address
-                dateAndTime.text = myLocation.convertDateAndTimeToMyFormat()
+                dateAndTime.text = DateManipulator.convertDateAndTimeToString(
+                    myLocation.dateAndTime
+                )
             }
         }
     }

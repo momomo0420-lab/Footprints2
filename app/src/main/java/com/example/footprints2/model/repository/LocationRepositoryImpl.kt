@@ -4,6 +4,7 @@ import android.location.Location
 import com.example.footprints2.model.repository.api.MyLocationClient
 import com.example.footprints2.model.repository.database.MyLocation
 import com.example.footprints2.model.repository.database.MyLocationDao
+import com.example.footprints2.util.DateManipulator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -87,9 +88,12 @@ class LocationRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun loadMyLocationListByStartAndEnd(start: Long, end: Long): List<MyLocation> {
+    override suspend fun loadMyLocationListBySelectedDate(date: Long): List<MyLocation> {
         return withContext(Dispatchers.IO) {
-            dao.loadMyLocationListByStartAndEnd(start, end)
+            val today = DateManipulator.convertDateAndTimeToDate(date)
+            val nextDay = DateManipulator.nextDayOf(today)
+
+            dao.loadMyLocationListByStartAndEnd(today, nextDay)
         }
     }
 
