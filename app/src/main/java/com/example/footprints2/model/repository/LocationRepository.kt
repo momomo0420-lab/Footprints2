@@ -18,6 +18,6 @@ interface LocationRepository {
     suspend fun loadLastAddress(): String
     suspend fun loadAllMyLocationList(): List<MyLocation>
     suspend fun loadAllDateAndTime(): List<Long>
-    suspend fun loadMyLocationListByStartAndEnd(start: Long, end: Long): List<MyLocation>
+    suspend fun loadMyLocationListBySelectedDate(date: Long): List<MyLocation>
     suspend fun loadMyLocationByDateAndTime(dateAndTime: Long): MyLocation
 }
