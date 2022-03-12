@@ -17,21 +17,28 @@ import com.example.footprints2.util.DateManipulator
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class DetailFragment : Fragment() {
     companion object {
         private const val TAG = "DetailFragment"
-        private const val CONDITIONS_OF_YELLOW = 1
-        private const val CONDITIONS_OF_RED = 3
-        private const val ZOOM_LEVEL = 13.0F
+
+        private enum class ZOOM(val value: Float) {
+            HIGH(20.0F),
+            MIDDLE(15.0F),
+            LOW(12.0F)
+        }
+
+        private enum class OPACITY(val value: Float) {
+            HIGH(1.0F),
+            MIDDLE(0.7F),
+            LOW(0.3F)
+        }
     }
 
     private var _binding: FragmentDetailBinding? = null
@@ -67,6 +74,10 @@ class DetailFragment : Fragment() {
     private fun setupAppBar() {
         val toolbar = requireActivity().findViewById<Toolbar>(R.id.toolbar_main_activity)
         toolbar.menu.clear()
+        val myLocation = args.myLocation
+        toolbar.title = DateManipulator.convertDateAndTimeToString2(
+            myLocation.dateAndTime
+        )
     }
 
     private fun setupGoogleMap() {
@@ -75,7 +86,7 @@ class DetailFragment : Fragment() {
     }
 
     private fun getOnMapReadyCallback(myLocation: MyLocation): OnMapReadyCallback {
-        return OnMapReadyCallback {
+        return OnMapReadyCallback { map ->
             lifecycleScope.launch {
                 Log.d(TAG, "OnMapReadyCallback")
 
@@ -83,14 +94,32 @@ class DetailFragment : Fragment() {
                 viewModel.loadMyLocationListBy(myLocation.dateAndTime)
 
                 // マーカーの設定
-                setupMarker(it)
+                setupMarker(map)
 
                 // 表示地点の設定
-                setupDisplayPoint(it, myLocation)
+                setupDisplayPoint(map, myLocation)
 
                 // ポリラインの設定
-                setupPolyLine(it)
+                setupPolyLine(map)
+
+                // UIの設定
+                setupUI(map)
+
+                setupHomeButton(map, myLocation)
             }
+        }
+    }
+
+    private fun setupHomeButton(map: GoogleMap, myLocation: MyLocation) {
+        binding.actionHome.setOnClickListener {
+            val latLng = LatLng(myLocation.latitude, myLocation.longitude)
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM.LOW.value))
+        }
+    }
+
+    private fun setupUI(map: GoogleMap) {
+        with(map.uiSettings) {
+            isZoomControlsEnabled = true
         }
     }
 
@@ -101,60 +130,46 @@ class DetailFragment : Fragment() {
         Log.d(TAG, "setupMarker")
         val option = MarkerOptions()
 
-        var lastMyLocation: MyLocation? = null
-
         val myLocationList = viewModel.getMyLocationList() ?: return
         for(myLocation in myLocationList) {
             val latLng = LatLng(myLocation.latitude, myLocation.longitude)
+
             option.apply {
                 position(latLng)
                 title(DateManipulator.convertDateAndTimeToString(myLocation.dateAndTime))
                 snippet(myLocation.address)
-                icon(BitmapDescriptorFactory.defaultMarker(
-                    getMakerColor(lastMyLocation, myLocation)
-                ))
+                alpha(OPACITY.LOW.value)
             }
+
             map.addMarker(option)
-            lastMyLocation = myLocation
         }
+        map.setOnMarkerClickListener(getOnMarkerClickListener(map))
     }
 
     /**
-     * マーカーの色を取得する
+     * マーカークリック時の動作
      */
-    private fun getMakerColor(
-        lastMyLocation: MyLocation?,
-        currentMyLocation: MyLocation): Float {
-
-        var color = BitmapDescriptorFactory.HUE_BLUE
-
-        lastMyLocation ?: return color
-
-        val diff = currentMyLocation.dateAndTime - lastMyLocation.dateAndTime
-        val hours = TimeUnit.MILLISECONDS.toHours(diff)
-
-        if((hours >= CONDITIONS_OF_YELLOW) && (hours < CONDITIONS_OF_RED)) {
-            color = BitmapDescriptorFactory.HUE_YELLOW
-        } else if(hours >= CONDITIONS_OF_RED) {
-            color = BitmapDescriptorFactory.HUE_RED
-        }
-
-        return color
+    private fun getOnMarkerClickListener(
+        map: GoogleMap
+    ): GoogleMap.OnMarkerClickListener = GoogleMap.OnMarkerClickListener { marker ->
+        val latLng = marker.position
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM.HIGH.value))
+        false
     }
 
     /**
      * 表示位置の設定
      */
-    private fun setupDisplayPoint(it: GoogleMap, myLocation: MyLocation) {
+    private fun setupDisplayPoint(map: GoogleMap, myLocation: MyLocation) {
         Log.d(TAG, "setupDisplayPoint")
         val latLng = LatLng(myLocation.latitude, myLocation.longitude)
-        it.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_LEVEL))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM.LOW.value))
     }
 
     /**
      * ポリラインの設定
      */
-    private fun setupPolyLine(it: GoogleMap) {
+    private fun setupPolyLine(map: GoogleMap) {
         Log.d(TAG, "setupPolyLine")
 
         val option = PolylineOptions()
@@ -165,7 +180,7 @@ class DetailFragment : Fragment() {
             option.add(latLng)
         }
 
-        it.addPolyline(option)
+        map.addPolyline(option)
     }
 
     override fun onStart() {

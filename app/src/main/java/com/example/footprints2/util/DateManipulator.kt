@@ -5,11 +5,18 @@ import java.util.*
 
 object DateManipulator {
     private const val FORMAT_PATTERN_DATE = "yyyy/MM/dd"
-    private const val FORMAT_PATTERN_DATE_AND_TIME = "$FORMAT_PATTERN_DATE HH:mm:ss"
+    private const val FORMAT_PATTERN_TIME = "HH:mm:ss"
+    private const val FORMAT_PATTERN_DATE_AND_TIME = "$FORMAT_PATTERN_DATE $FORMAT_PATTERN_TIME"
+    private const val FORMAT_PATTERN_DATE2 = "yyyy年MM月dd日"
     private const val FORMAT_PATTERN_0 = "00:00:00"
 
     fun convertDateAndTimeToString(dateAndTime: Long): String {
         val formatter = SimpleDateFormat(FORMAT_PATTERN_DATE_AND_TIME, Locale.getDefault())
+        return formatter.format(Date(dateAndTime))
+    }
+
+    fun convertDateAndTimeToString2(dateAndTime: Long): String {
+        val formatter = SimpleDateFormat(FORMAT_PATTERN_DATE2, Locale.getDefault())
         return formatter.format(Date(dateAndTime))
     }
 

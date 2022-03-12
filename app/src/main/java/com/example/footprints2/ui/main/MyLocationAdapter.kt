@@ -33,7 +33,6 @@ class MyLocationAdapter(
          */
         fun bindTo(myLocation: MyLocation) {
             binding.apply {
-                address.text = myLocation.address
                 dateAndTime.text = DateManipulator.convertDateAndTimeToString(
                     myLocation.dateAndTime
                 )

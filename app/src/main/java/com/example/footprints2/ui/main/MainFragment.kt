@@ -63,6 +63,7 @@ class MainFragment : Fragment() {
                 setupAppBar()
                 // ロケーションリストの設定
                 setupMyLocationList()
+                //TODO
                 // テストコード
                 checkErrorCode()
             } else {
