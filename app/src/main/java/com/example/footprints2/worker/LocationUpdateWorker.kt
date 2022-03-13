@@ -45,11 +45,12 @@ class LocationUpdateWorker(
                         applicationContext,
                         location
                     )
-                    val lastAddress = repository.loadLastAddress()
+//                    val lastAddress = repository.loadLastAddress()
 
-                    if(address != lastAddress) {
-                        repository.insert(location, address)
-                    }
+//                    if(address != lastAddress) {
+//                        repository.insert(location, address)
+//                    }
+                    repository.insert(location, address)
 
                     completer.set(Result.success())
                 }

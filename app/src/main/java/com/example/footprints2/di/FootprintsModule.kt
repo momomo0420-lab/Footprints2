@@ -26,7 +26,9 @@ object FootprintsModule {
             context,
             MyLocationDatabase::class.java,
             "my_location.db"
-        ).build()
+        )
+        .fallbackToDestructiveMigration()
+        .build()
     }
 
     @Singleton

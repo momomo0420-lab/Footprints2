@@ -23,7 +23,7 @@ class MainViewModel @Inject constructor(
     val isRunnable: LiveData<Boolean> get() = _isRunnable
 
     // 保持されているMyLocation全件
-    val myLocationList = repository.loadAll().asLiveData()
+    val dateList = repository.loadAllDate().asLiveData()
 
     val errorCode = MutableLiveData(0)
 

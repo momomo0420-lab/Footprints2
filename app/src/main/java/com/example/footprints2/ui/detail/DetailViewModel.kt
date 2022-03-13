@@ -16,7 +16,7 @@ class DetailViewModel @Inject constructor(
         return myLocationList
     }
 
-    suspend fun loadMyLocationListBy(date: Long)  {
-        myLocationList = repository.loadMyLocationListBySelectedDate(date)
+    suspend fun loadMyLocationList(date: String)  {
+        myLocationList = repository.loadMyLocationFrom(date)
     }
 }

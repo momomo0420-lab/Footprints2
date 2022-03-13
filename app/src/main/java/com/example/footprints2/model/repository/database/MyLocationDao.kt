@@ -13,25 +13,9 @@ interface MyLocationDao {
     @Query("DELETE FROM my_location" )
     suspend fun deleteAll()
 
-    @Query("SELECT * FROM my_location ORDER BY date_and_time")
-    fun loadAll(): Flow<List<MyLocation>>
+    @Query("SELECT date FROM my_location GROUP BY date ORDER BY date DESC")
+    fun loadAllDate(): Flow<List<String>>
 
-    @Query("SELECT address FROM my_location ORDER BY date_and_time LIMIT 1")
-    suspend fun loadLastAddress(): String
-
-    @Query("SELECT * FROM my_location ORDER BY date_and_time")
-    suspend fun loadAllMyLocationList(): List<MyLocation>
-
-    @Query("SELECT date_and_time FROM my_location ORDER BY date_and_time DESC")
-    suspend fun loadAllDateAndTime(): List<Long>
-
-    @Query("SELECT * FROM my_location " +
-                    "WHERE date_and_time >= :start AND  date_and_time < :end " +
-                    "ORDER BY date_and_time")
-    suspend fun loadMyLocationListByStartAndEnd(start: Long, end: Long): List<MyLocation>
-
-    @Query("SELECT * FROM my_location " +
-                    " WHERE date_and_time = :dateAndTime " +
-                    " ORDER BY date_and_time LIMIT 1")
-    suspend fun loadMyLocationByDateAndTime(dateAndTime: Long): MyLocation
+    @Query("SELECT * FROM my_location WHERE date = :date ORDER BY time")
+    suspend fun loadMyLocationFrom(date: String): List<MyLocation>
 }

@@ -6,8 +6,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.footprints2.databinding.MyLocationListItemBinding
-import com.example.footprints2.model.repository.database.MyLocation
-import com.example.footprints2.util.DateManipulator
 
 /**
  * MyLocationアダプタ
@@ -16,8 +14,8 @@ import com.example.footprints2.util.DateManipulator
  * @constructor 選択されたアイテムに対する動作
  */
 class MyLocationAdapter(
-    private val listener: (MyLocation) -> Unit
-) : ListAdapter<MyLocation, MyLocationAdapter.ViewHolder>(callback) {
+    private val listener: (String) -> Unit
+) : ListAdapter<String, MyLocationAdapter.ViewHolder>(callback) {
     /**
      * ビューホルダー
      *
@@ -29,13 +27,11 @@ class MyLocationAdapter(
         /**
          * リストアイテムの登録
          *
-         * @param myLocation 画面に表示するMyLocationのアイテム
+         * @param date 画面に表示する日付
          */
-        fun bindTo(myLocation: MyLocation) {
+        fun bindTo(date: String) {
             binding.apply {
-                dateAndTime.text = DateManipulator.convertDateAndTimeToString(
-                    myLocation.dateAndTime
-                )
+                dateAndTime.text = date
             }
         }
     }
@@ -58,8 +54,8 @@ class MyLocationAdapter(
         val viewHolder = ViewHolder(binding)
         binding.root.setOnClickListener {
             val position = viewHolder.bindingAdapterPosition
-            val myLocation = getItem(position)
-            listener(myLocation)
+            val date = getItem(position)
+            listener(date)
         }
 
         return viewHolder
@@ -72,21 +68,21 @@ class MyLocationAdapter(
      * @param position position番目のアイテム
      */
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val myLocation = getItem(position)
-        holder.bindTo(myLocation)
+        val date = getItem(position)
+        holder.bindTo(date)
     }
 
     companion object {
         /**
          * 差分検知のためのコールバック。
          */
-        private val callback = object : DiffUtil.ItemCallback<MyLocation>() {
-            override fun areItemsTheSame(oldItem: MyLocation, newItem: MyLocation): Boolean {
-                return oldItem._id == newItem._id
+        private val callback = object : DiffUtil.ItemCallback<String>() {
+            override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
+                return oldItem == newItem
             }
 
-            override fun areContentsTheSame(oldItem: MyLocation, newItem: MyLocation): Boolean {
-                return oldItem.address == newItem.address
+            override fun areContentsTheSame(oldItem: String, newItem: String): Boolean {
+                return oldItem == newItem
             }
         }
     }
