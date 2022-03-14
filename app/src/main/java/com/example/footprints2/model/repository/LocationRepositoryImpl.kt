@@ -26,17 +26,23 @@ class LocationRepositoryImpl @Inject constructor(
      * 現在地と住所（文字列）をDBに登録
      */
     override suspend fun insert(location: Location, address: String) {
-        val now = System.currentTimeMillis()
-
-        val myLocation = MyLocation(
-            latitude = location.latitude,
-            longitude = location.longitude,
-            address = address,
-            date = DateManipulator.convertTimeStampToDate(now),
-            time = DateManipulator.convertTimeStampToTime(now)
-        )
-
         withContext(Dispatchers.IO) {
+            val lastAddress = loadLastAddress()
+
+            if(lastAddress == address) {
+                return@withContext
+            }
+
+            val now = System.currentTimeMillis()
+
+            val myLocation = MyLocation(
+                latitude = location.latitude,
+                longitude = location.longitude,
+                address = address,
+                date = DateManipulator.convertTimeStampToDate(now),
+                time = DateManipulator.convertTimeStampToTime(now)
+            )
+
             dao.insert(myLocation)
         }
     }
@@ -81,9 +87,9 @@ class LocationRepositoryImpl @Inject constructor(
     /**
      * DBに登録されている最後に取得した住所を取得
      *
-     * @return MyLocation
+     * @return 住所
      */
-//    override suspend fun loadLastAddress(): String  = withContext(Dispatchers.IO) {
-//        dao.loadLastAddress()
-//    }
+    override suspend fun loadLastAddress(): String  = withContext(Dispatchers.IO) {
+        dao.loadLastAddress()
+    }
 }

@@ -98,26 +98,17 @@ class DetailFragment : Fragment() {
                 // ポリラインの設定
                 setupPolyLine(map)
 
-                // UIの設定
-                setupUI(map)
-
-                setupHomeButton(map)
+                setupVideoButton(map)
             }
         }
     }
 
-    private fun setupHomeButton(map: GoogleMap) {
-        binding.actionHome.setOnClickListener {
+    private fun setupVideoButton(map: GoogleMap) {
+        binding.actionCamera.setOnClickListener {
             val myLocation = viewModel.getMyLocationList()?.get(0) ?: return@setOnClickListener
 
             val latLng = LatLng(myLocation.latitude, myLocation.longitude)
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM.LOW.value))
-        }
-    }
-
-    private fun setupUI(map: GoogleMap) {
-        with(map.uiSettings) {
-            isZoomControlsEnabled = true
         }
     }
 

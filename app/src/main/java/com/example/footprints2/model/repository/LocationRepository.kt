@@ -14,5 +14,5 @@ interface LocationRepository {
 
     fun loadAllDate(): Flow<List<String>>
     suspend fun loadMyLocationFrom(date: String): List<MyLocation>
-//    suspend fun loadLastAddress(): String
+    suspend fun loadLastAddress(): String
 }

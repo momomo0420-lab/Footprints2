@@ -18,4 +18,7 @@ interface MyLocationDao {
 
     @Query("SELECT * FROM my_location WHERE date = :date ORDER BY time")
     suspend fun loadMyLocationFrom(date: String): List<MyLocation>
+
+    @Query("SELECT address FROM my_location ORDER BY _id DESC LIMIT 1")
+    suspend fun loadLastAddress(): String
 }

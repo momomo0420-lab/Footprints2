@@ -13,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import com.example.footprints2.R
 import com.example.footprints2.databinding.FragmentMainBinding
 import com.example.footprints2.ui.SharedViewModel
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -62,34 +61,11 @@ class MainFragment : Fragment() {
                 setupAppBar()
                 // ロケーションリストの設定
                 setupMyLocationList()
-                //TODO
-                // テストコード
-                checkErrorCode()
             } else {
                 // 必要な権限がない場合、権限要求画面に移動する
                 val action = MainFragmentDirections.actionMainFragmentToRequestPermissionFragment()
                 findNavController().navigate(action)
             }
-        }
-    }
-
-    private fun checkErrorCode() {
-        viewModel.errorCode.observe(viewLifecycleOwner) {
-            val errorMessage = when(it) {
-                0 -> {
-                    "通常通り起動可能"
-                }
-                1 -> {
-                    "ワーカーが登録されているため起動不可"
-                }
-                2 -> {
-                    "ワーカーは登録されているがキューは終了しているため起動可能"
-                }
-                else -> {
-                    "予期せぬエラー"
-                }
-            }
-            Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_SHORT).show()
         }
     }
 
