@@ -23,9 +23,7 @@ class MainViewModel @Inject constructor(
     val isRunnable: LiveData<Boolean> get() = _isRunnable
 
     // 保持されているMyLocation全件
-    val myLocationList = repository.loadAll().asLiveData()
-
-    val errorCode = MutableLiveData(0)
+    val dateList = repository.loadAllDate().asLiveData()
 
     /**
      * ワーカーが登録されているか確認する
@@ -35,20 +33,15 @@ class MainViewModel @Inject constructor(
             LocationUpdateWorker.UNIQUE_WORK_NAME
         ).get()
 
-        var count = 0
-
         if(workInfoList.isNotEmpty()) {
             _isRunnable.value = false
-            count++
 
             for(work in workInfoList) {
                 if(work.state != WorkInfo.State.ENQUEUED) {
                     _isRunnable.value = true
-                    count++
                 }
             }
         }
-        errorCode.value = count
     }
 
     /**

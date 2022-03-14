@@ -26,16 +26,23 @@ class LocationRepositoryImpl @Inject constructor(
      * 現在地と住所（文字列）をDBに登録
      */
     override suspend fun insert(location: Location, address: String) {
-        val now = System.currentTimeMillis()
-
-        val myLocation = MyLocation(
-            latitude = location.latitude,
-            longitude = location.longitude,
-            address = address,
-            dateAndTime = now
-        )
-
         withContext(Dispatchers.IO) {
+            val lastAddress = loadLastAddress()
+
+            if(lastAddress == address) {
+                return@withContext
+            }
+
+            val now = System.currentTimeMillis()
+
+            val myLocation = MyLocation(
+                latitude = location.latitude,
+                longitude = location.longitude,
+                address = address,
+                date = DateManipulator.convertTimeStampToDate(now),
+                time = DateManipulator.convertTimeStampToTime(now)
+            )
+
             dao.insert(myLocation)
         }
     }
@@ -56,50 +63,33 @@ class LocationRepositoryImpl @Inject constructor(
         client.getCurrentLocation(listener)
     }
 
-
+    /**
+     * DBに登録されている日付を全件取得
+     *
+     * @return 日付リスト
+     */
+    override fun loadAllDate(): Flow<List<String>> {
+        return dao.loadAllDate()
+    }
 
     /**
-     * DBに登録されているMyLocationを全件取得
+     * 日付からMyLocationを取得する
      *
+     * @param date 日付
      * @return MyLocationリスト
      */
-    override fun loadAll(): Flow<List<MyLocation>> {
-        return dao.loadAll()
+    override suspend fun loadMyLocationFrom(date: String): List<MyLocation> {
+        return withContext(Dispatchers.IO) {
+            dao.loadMyLocationFrom(date)
+        }
     }
 
     /**
      * DBに登録されている最後に取得した住所を取得
      *
-     * @return MyLocation
+     * @return 住所
      */
     override suspend fun loadLastAddress(): String  = withContext(Dispatchers.IO) {
         dao.loadLastAddress()
-    }
-
-    override suspend fun loadAllMyLocationList(): List<MyLocation> {
-        return withContext(Dispatchers.IO) {
-            dao.loadAllMyLocationList()
-        }
-    }
-
-    override suspend fun loadAllDateAndTime(): List<Long> {
-        return withContext(Dispatchers.IO) {
-            dao.loadAllDateAndTime()
-        }
-    }
-
-    override suspend fun loadMyLocationListBySelectedDate(date: Long): List<MyLocation> {
-        return withContext(Dispatchers.IO) {
-            val today = DateManipulator.convertDateAndTimeToDate(date)
-            val nextDay = DateManipulator.nextDayOf(today)
-
-            dao.loadMyLocationListByStartAndEnd(today, nextDay)
-        }
-    }
-
-    override suspend fun loadMyLocationByDateAndTime(dateAndTime: Long): MyLocation {
-        return withContext(Dispatchers.IO) {
-            dao.loadMyLocationByDateAndTime(dateAndTime)
-        }
     }
 }

@@ -21,6 +21,9 @@ data class MyLocation(
     @ColumnInfo(name = "address")
     val address: String,
 
-    @ColumnInfo(name = "date_and_time")
-    val dateAndTime: Long
+    @ColumnInfo(name = "date")
+    val date: String,
+
+    @ColumnInfo(name = "time")
+    val time: String
 ) : Parcelable

@@ -12,9 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.footprints2.R
 import com.example.footprints2.databinding.FragmentMainBinding
-import com.example.footprints2.model.repository.database.MyLocation
 import com.example.footprints2.ui.SharedViewModel
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -63,34 +61,11 @@ class MainFragment : Fragment() {
                 setupAppBar()
                 // ロケーションリストの設定
                 setupMyLocationList()
-                //TODO
-                // テストコード
-                checkErrorCode()
             } else {
                 // 必要な権限がない場合、権限要求画面に移動する
                 val action = MainFragmentDirections.actionMainFragmentToRequestPermissionFragment()
                 findNavController().navigate(action)
             }
-        }
-    }
-
-    private fun checkErrorCode() {
-        viewModel.errorCode.observe(viewLifecycleOwner) {
-            val errorMessage = when(it) {
-                0 -> {
-                    "通常通り起動可能"
-                }
-                1 -> {
-                    "ワーカーが登録されているため起動不可"
-                }
-                2 -> {
-                    "ワーカーは登録されているがキューは終了しているため起動可能"
-                }
-                else -> {
-                    "予期せぬエラー"
-                }
-            }
-            Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -120,7 +95,7 @@ class MainFragment : Fragment() {
         val adapter =  MyLocationAdapter(getOnItemSelectedListener())
 
         binding.recycler.adapter = adapter
-        viewModel.myLocationList.observe(viewLifecycleOwner) {
+        viewModel.dateList.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
     }
@@ -130,9 +105,9 @@ class MainFragment : Fragment() {
      *
      * @return リスト選択選択時の動作用リスナー
      */
-    private fun getOnItemSelectedListener(): (MyLocation) -> Unit {
-        return object : (MyLocation) -> Unit {
-            override fun invoke(p1: MyLocation) {
+    private fun getOnItemSelectedListener(): (String) -> Unit {
+        return object : (String) -> Unit {
+            override fun invoke(p1: String) {
                 val action = MainFragmentDirections.actionMainFragmentToDetailFragment(p1)
                 findNavController().navigate(action)
             }

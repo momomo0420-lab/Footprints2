@@ -44,7 +44,7 @@
         android:label="詳細画面"
         tools:layout="@layout/fragment_detail">
         <argument
-            android:name="myLocation"
-            app:argType="com.example.footprints2.model.repository.database.MyLocation" />
+            android:name="date"
+            app:argType="string" />
     </fragment>
 </navigation>

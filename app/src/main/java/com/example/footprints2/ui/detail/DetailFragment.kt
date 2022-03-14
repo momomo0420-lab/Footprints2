@@ -12,8 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.example.footprints2.R
 import com.example.footprints2.databinding.FragmentDetailBinding
-import com.example.footprints2.model.repository.database.MyLocation
-import com.example.footprints2.util.DateManipulator
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -74,52 +72,43 @@ class DetailFragment : Fragment() {
     private fun setupAppBar() {
         val toolbar = requireActivity().findViewById<Toolbar>(R.id.toolbar_main_activity)
         toolbar.menu.clear()
-        val myLocation = args.myLocation
-        toolbar.title = DateManipulator.convertDateAndTimeToString2(
-            myLocation.dateAndTime
-        )
+        val date = args.date
+        toolbar.title = date
     }
 
     private fun setupGoogleMap() {
-        val myLocation = args.myLocation
-        binding.mapView.getMapAsync(getOnMapReadyCallback(myLocation))
+        val date = args.date
+        binding.mapView.getMapAsync(getOnMapReadyCallback(date))
     }
 
-    private fun getOnMapReadyCallback(myLocation: MyLocation): OnMapReadyCallback {
+    private fun getOnMapReadyCallback(date: String): OnMapReadyCallback {
         return OnMapReadyCallback { map ->
             lifecycleScope.launch {
                 Log.d(TAG, "OnMapReadyCallback")
 
                 // 選択された日付の地点をロードする
-                viewModel.loadMyLocationListBy(myLocation.dateAndTime)
+                viewModel.loadMyLocationList(date)
 
                 // マーカーの設定
                 setupMarker(map)
 
                 // 表示地点の設定
-                setupDisplayPoint(map, myLocation)
+                setupDisplayPoint(map)
 
                 // ポリラインの設定
                 setupPolyLine(map)
 
-                // UIの設定
-                setupUI(map)
-
-                setupHomeButton(map, myLocation)
+                setupVideoButton(map)
             }
         }
     }
 
-    private fun setupHomeButton(map: GoogleMap, myLocation: MyLocation) {
-        binding.actionHome.setOnClickListener {
+    private fun setupVideoButton(map: GoogleMap) {
+        binding.actionCamera.setOnClickListener {
+            val myLocation = viewModel.getMyLocationList()?.get(0) ?: return@setOnClickListener
+
             val latLng = LatLng(myLocation.latitude, myLocation.longitude)
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM.LOW.value))
-        }
-    }
-
-    private fun setupUI(map: GoogleMap) {
-        with(map.uiSettings) {
-            isZoomControlsEnabled = true
         }
     }
 
@@ -136,7 +125,7 @@ class DetailFragment : Fragment() {
 
             option.apply {
                 position(latLng)
-                title(DateManipulator.convertDateAndTimeToString(myLocation.dateAndTime))
+                title("${myLocation.date} ${myLocation.time}")
                 snippet(myLocation.address)
                 alpha(OPACITY.LOW.value)
             }
@@ -160,8 +149,9 @@ class DetailFragment : Fragment() {
     /**
      * 表示位置の設定
      */
-    private fun setupDisplayPoint(map: GoogleMap, myLocation: MyLocation) {
+    private fun setupDisplayPoint(map: GoogleMap) {
         Log.d(TAG, "setupDisplayPoint")
+        val myLocation = viewModel.getMyLocationList()?.get(0) ?: return
         val latLng = LatLng(myLocation.latitude, myLocation.longitude)
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM.LOW.value))
     }

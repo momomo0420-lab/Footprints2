@@ -1,5 +1,7 @@
 package com.example.footprints2.util
 
+import java.sql.Date
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -10,29 +12,23 @@ object DateManipulator {
     private const val FORMAT_PATTERN_DATE2 = "yyyy年MM月dd日"
     private const val FORMAT_PATTERN_0 = "00:00:00"
 
-    fun convertDateAndTimeToString(dateAndTime: Long): String {
-        val formatter = SimpleDateFormat(FORMAT_PATTERN_DATE_AND_TIME, Locale.getDefault())
-        return formatter.format(Date(dateAndTime))
-    }
-
-    fun convertDateAndTimeToString2(dateAndTime: Long): String {
-        val formatter = SimpleDateFormat(FORMAT_PATTERN_DATE2, Locale.getDefault())
-        return formatter.format(Date(dateAndTime))
-    }
-
-    fun convertDateAndTimeToDate(dateAndTime: Long): Long {
+    fun convertTimeStampToDate(timestamp: Long): String {
         val formatter = SimpleDateFormat(FORMAT_PATTERN_DATE, Locale.getDefault())
-        var date = formatter.format(Date(dateAndTime))
-        date += " $FORMAT_PATTERN_0"
+        return formatter.format(timestamp)
+    }
 
+    fun convertDateToTimestamp(date: String): Long {
+        val formatter = SimpleDateFormat(FORMAT_PATTERN_DATE, Locale.getDefault())
         return formatter.parse(date)?.time ?: 0
     }
 
-    fun nextDayOf(date: Long): Long {
-        val calendar = Calendar.getInstance()
-        calendar.time = Date(date)
-        calendar.add(Calendar.DAY_OF_MONTH, 1)
+    fun convertTimeStampToTime(timestamp: Long): String {
+        val formatter = SimpleDateFormat(FORMAT_PATTERN_TIME, Locale.getDefault())
+        return formatter.format(timestamp)
+    }
 
-        return calendar.time.time
+    fun convertTimeToTimestamp(time: String): Long {
+        val formatter = SimpleDateFormat(FORMAT_PATTERN_TIME, Locale.getDefault())
+        return formatter.parse(time)?.time ?: 0
     }
 }
