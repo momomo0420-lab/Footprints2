@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.example.footprints2.R
 import com.example.footprints2.databinding.FragmentDetailBinding
+import com.example.footprints2.model.repository.database.MyLocation
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -28,14 +29,7 @@ class DetailFragment : Fragment() {
 
         private enum class ZOOM(val value: Float) {
             HIGH(20.0F),
-            MIDDLE(15.0F),
             LOW(12.0F)
-        }
-
-        private enum class OPACITY(val value: Float) {
-            HIGH(1.0F),
-            MIDDLE(0.7F),
-            LOW(0.3F)
         }
     }
 
@@ -45,6 +39,8 @@ class DetailFragment : Fragment() {
     private val viewModel: DetailViewModel by viewModels()
 
     private val args: DetailFragmentArgs by navArgs()
+
+    private var zoomLevel =  ZOOM.LOW.value
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,51 +72,36 @@ class DetailFragment : Fragment() {
     }
 
     private fun setupGoogleMap() {
-        binding.mapView.getMapAsync(getOnMapReadyCallback(args.date))
+        binding.mapView.getMapAsync(getOnMapReadyCallback())
     }
 
-    private fun getOnMapReadyCallback(date: String): OnMapReadyCallback {
+    private fun getOnMapReadyCallback(): OnMapReadyCallback {
         return OnMapReadyCallback { map ->
             lifecycleScope.launch {
                 Log.d(TAG, "OnMapReadyCallback")
 
-                // 選択された日付の地点をロードする
-                viewModel.loadMyLocationList(date)
+                viewModel.getMyLocationList(args.date)?.let { myLocationList ->
+                    // マーカーの設定
+                    setupMarker(map, myLocationList)
+                    // ポリラインの設定
+                    setupPolyLine(map, myLocationList)
 
-                // マーカーの設定
-                setupMarker(map)
-
-                // 表示地点の設定
-                setupDisplayPoint(map)
-
-                // ポリラインの設定
-                setupPolyLine(map)
-
-                setupVideoButton(map)
+                    // 表示地点の設定
+                    setupDisplayPoint(map, myLocationList[0])
+                    // カメラボタンの設定
+                    setupVideoButton(map, myLocationList[0])
+                }
             }
-        }
-    }
-
-    private fun setupVideoButton(map: GoogleMap) {
-        binding.actionCamera.setOnClickListener {
-            val myLocation = viewModel.getMyLocationList()?.get(0) ?: return@setOnClickListener
-
-            val latLng = LatLng(myLocation.latitude, myLocation.longitude)
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM.LOW.value))
         }
     }
 
     /**
      * マーカーの設定
-     *
-     * @param map グーグルマップ
-     * @param myLocationList 地点データリスト
      */
-    private fun setupMarker(map: GoogleMap) {
+    private fun setupMarker(map: GoogleMap, myLocationList: List<MyLocation>) {
         Log.d(TAG, "setupMarker")
         val option = MarkerOptions()
 
-        val myLocationList = viewModel.getMyLocationList() ?: return
         for(myLocation in myLocationList) {
             val latLng = LatLng(myLocation.latitude, myLocation.longitude)
 
@@ -128,7 +109,6 @@ class DetailFragment : Fragment() {
                 position(latLng)
                 title("${myLocation.date} ${myLocation.time}")
                 snippet(myLocation.address)
-                alpha(OPACITY.LOW.value)
             }
 
             map.addMarker(option)
@@ -143,35 +123,51 @@ class DetailFragment : Fragment() {
         map: GoogleMap
     ): GoogleMap.OnMarkerClickListener = GoogleMap.OnMarkerClickListener { marker ->
         val latLng = marker.position
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM.HIGH.value))
+        zoomLevel = ZOOM.HIGH.value
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel))
         false
     }
 
     /**
      * 表示位置の設定
      */
-    private fun setupDisplayPoint(map: GoogleMap) {
+    private fun setupDisplayPoint(map: GoogleMap, myLocation: MyLocation) {
         Log.d(TAG, "setupDisplayPoint")
-        val myLocation = viewModel.getMyLocationList()?.get(0) ?: return
         val latLng = LatLng(myLocation.latitude, myLocation.longitude)
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM.LOW.value))
+        zoomLevel = ZOOM.LOW.value
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel))
     }
 
     /**
      * ポリラインの設定
      */
-    private fun setupPolyLine(map: GoogleMap) {
+    private fun setupPolyLine(map: GoogleMap, myLocationList: List<MyLocation>) {
         Log.d(TAG, "setupPolyLine")
 
         val option = PolylineOptions()
 
-        val myLocationList = viewModel.getMyLocationList() ?: return
         for(myLocation in myLocationList) {
             val latLng = LatLng(myLocation.latitude, myLocation.longitude)
             option.add(latLng)
         }
 
         map.addPolyline(option)
+    }
+
+    /**
+     * カメラボタンの設定
+     *
+     * @param map グーグルマップ
+     * @param myLocation 地点データ
+     */
+    private fun setupVideoButton(map: GoogleMap, myLocation: MyLocation) {
+        binding.actionCamera.setOnClickListener {
+            zoomLevel += 4.0F
+            if(zoomLevel > ZOOM.HIGH.value) {
+                zoomLevel = ZOOM.LOW.value
+            }
+            map.moveCamera(CameraUpdateFactory.zoomTo(zoomLevel))
+        }
     }
 
     override fun onStart() {

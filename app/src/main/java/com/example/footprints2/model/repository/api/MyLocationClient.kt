@@ -7,5 +7,5 @@ import android.location.Location
  */
 interface MyLocationClient {
     // 現在地を取得する
-    fun getCurrentLocation(listener: (Location) -> Unit)
+    fun getCurrentLocation(listener: (Location?) -> Unit)
 }

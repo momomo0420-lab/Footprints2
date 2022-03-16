@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocationRepository {
     // API操作
-    fun getCurrentLocation(listener: (Location) -> Unit)
+    fun getCurrentLocation(listener: (Location?) -> Unit)
 
     // DB操作
     suspend fun insert(location: Location, address: String)

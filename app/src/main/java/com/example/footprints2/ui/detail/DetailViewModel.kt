@@ -12,11 +12,12 @@ class DetailViewModel @Inject constructor(
 ) : ViewModel() {
     private var myLocationList: List<MyLocation>? = null
 
-    fun getMyLocationList(): List<MyLocation>? {
-        return myLocationList
-    }
-
-    suspend fun loadMyLocationList(date: String)  {
+    suspend fun getMyLocationList(date: String): List<MyLocation>? {
+        if(myLocationList != null) {
+            return myLocationList
+        }
         myLocationList = repository.loadMyLocationFrom(date)
+
+        return myLocationList
     }
 }

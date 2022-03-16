@@ -23,6 +23,13 @@ class LocationRepositoryImpl @Inject constructor(
     private val dao: MyLocationDao
 ) : LocationRepository {
     /**
+     * 現在地を取得
+     */
+    override fun getCurrentLocation(listener: (Location?) -> Unit) {
+        client.getCurrentLocation(listener)
+    }
+
+    /**
      * 現在地と住所（文字列）をDBに登録
      */
     override suspend fun insert(location: Location, address: String) {
@@ -54,13 +61,6 @@ class LocationRepositoryImpl @Inject constructor(
         withContext(Dispatchers.IO) {
             dao.deleteAll()
         }
-    }
-
-    /**
-     * 現在地を取得
-     */
-    override fun getCurrentLocation(listener: (Location) -> Unit) {
-        client.getCurrentLocation(listener)
     }
 
     /**

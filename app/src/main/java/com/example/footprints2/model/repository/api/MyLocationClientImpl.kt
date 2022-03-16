@@ -26,13 +26,12 @@ class MyLocationClientImpl @Inject constructor(
      * @param listener リスナー
      */
     @SuppressLint("MissingPermission")
-    override fun getCurrentLocation(listener: (Location) -> Unit) {
+    override fun getCurrentLocation(listener: (Location?) -> Unit) {
         client.getCurrentLocation(
             LocationRequest.PRIORITY_HIGH_ACCURACY,
             CancellationTokenSource().token
-        )
-            .addOnSuccessListener {
-                listener(it)
-            }
+        ).addOnSuccessListener { location ->
+            listener(location)
+        }
     }
 }

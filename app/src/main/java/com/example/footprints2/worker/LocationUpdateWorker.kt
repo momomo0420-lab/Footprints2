@@ -37,10 +37,15 @@ class LocationUpdateWorker(
      */
     private fun getOnLocationUpdateListener(
         completer: CallbackToFutureAdapter.Completer<Result>
-    ): (Location) -> Unit {
-        return object : (Location) -> Unit {
-            override fun invoke(location: Location) {
+    ): (Location?) -> Unit {
+        return object : (Location?) -> Unit {
+            override fun invoke(location: Location?) {
                 scope.launch {
+                    if(location == null) {
+                        completer.set(Result.failure())
+                        return@launch
+                    }
+
                     val address = MyLocationUtil.convertLocationToAddress(
                         applicationContext,
                         location
