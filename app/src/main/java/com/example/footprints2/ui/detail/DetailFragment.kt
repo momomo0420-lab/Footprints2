@@ -89,7 +89,7 @@ class DetailFragment : Fragment() {
                     // 表示地点の設定
                     setupDisplayPoint(map, myLocationList[0])
                     // カメラボタンの設定
-                    setupVideoButton(map, myLocationList[0])
+                    setupVideoButton(map)
                 }
             }
         }
@@ -158,9 +158,8 @@ class DetailFragment : Fragment() {
      * カメラボタンの設定
      *
      * @param map グーグルマップ
-     * @param myLocation 地点データ
      */
-    private fun setupVideoButton(map: GoogleMap, myLocation: MyLocation) {
+    private fun setupVideoButton(map: GoogleMap) {
         binding.actionCamera.setOnClickListener {
             zoomLevel += 4.0F
             if(zoomLevel > ZOOM.HIGH.value) {
