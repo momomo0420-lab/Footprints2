@@ -72,13 +72,11 @@ class DetailFragment : Fragment() {
     private fun setupAppBar() {
         val toolbar = requireActivity().findViewById<Toolbar>(R.id.toolbar_main_activity)
         toolbar.menu.clear()
-        val date = args.date
-        toolbar.title = date
+        toolbar.title = args.date
     }
 
     private fun setupGoogleMap() {
-        val date = args.date
-        binding.mapView.getMapAsync(getOnMapReadyCallback(date))
+        binding.mapView.getMapAsync(getOnMapReadyCallback(args.date))
     }
 
     private fun getOnMapReadyCallback(date: String): OnMapReadyCallback {
@@ -114,6 +112,9 @@ class DetailFragment : Fragment() {
 
     /**
      * マーカーの設定
+     *
+     * @param map グーグルマップ
+     * @param myLocationList 地点データリスト
      */
     private fun setupMarker(map: GoogleMap) {
         Log.d(TAG, "setupMarker")
