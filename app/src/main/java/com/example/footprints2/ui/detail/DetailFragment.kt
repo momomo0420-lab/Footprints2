@@ -27,9 +27,9 @@ class DetailFragment : Fragment() {
     companion object {
         private const val TAG = "DetailFragment"
 
-        private enum class ZOOM(val value: Float) {
-            HIGH(20.0F),
-            LOW(12.0F)
+        private enum class ZOOM_LEVEL(val value: Float) {
+            MAX(20.0F),
+            MIN(12.0F)
         }
     }
 
@@ -40,7 +40,7 @@ class DetailFragment : Fragment() {
 
     private val args: DetailFragmentArgs by navArgs()
 
-    private var zoomLevel =  ZOOM.LOW.value
+    private var zoomLevel =  ZOOM_LEVEL.MIN.value
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -123,7 +123,7 @@ class DetailFragment : Fragment() {
         map: GoogleMap
     ): GoogleMap.OnMarkerClickListener = GoogleMap.OnMarkerClickListener { marker ->
         val latLng = marker.position
-        zoomLevel = ZOOM.HIGH.value
+        zoomLevel = ZOOM_LEVEL.MAX.value
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel))
         false
     }
@@ -134,7 +134,7 @@ class DetailFragment : Fragment() {
     private fun setupDisplayPoint(map: GoogleMap, myLocation: MyLocation) {
         Log.d(TAG, "setupDisplayPoint")
         val latLng = LatLng(myLocation.latitude, myLocation.longitude)
-        zoomLevel = ZOOM.LOW.value
+        zoomLevel = ZOOM_LEVEL.MIN.value
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel))
     }
 
@@ -162,8 +162,8 @@ class DetailFragment : Fragment() {
     private fun setupVideoButton(map: GoogleMap) {
         binding.actionCamera.setOnClickListener {
             zoomLevel += 4.0F
-            if(zoomLevel > ZOOM.HIGH.value) {
-                zoomLevel = ZOOM.LOW.value
+            if(zoomLevel > ZOOM_LEVEL.MAX.value) {
+                zoomLevel = ZOOM_LEVEL.MIN.value
             }
             map.moveCamera(CameraUpdateFactory.zoomTo(zoomLevel))
         }
